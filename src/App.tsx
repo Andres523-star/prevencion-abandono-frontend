@@ -28,7 +28,7 @@ function Navbar() {
             <Link to="/">Dashboard</Link>
             <Link to="/reportes">Reportes</Link>
             <span style={{ color: 'rgba(255,255,255,0.7)', fontSize: 13 }}>
-              {userData.nombre}
+              {userData.nombre} {userData.apellido}
             </span>
             <button onClick={logout} style={{ padding: '6px 12px', fontSize: 13 }}>
               Salir
