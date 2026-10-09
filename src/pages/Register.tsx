@@ -12,10 +12,8 @@ export default function Register() {
   const navigate = useNavigate();
 
   const validarPassword = (p: string) => {
-    if (p.length < 8) return 'La contraseña debe tener al menos 8 caracteres';
-    if (!/[A-Z]/.test(p)) return 'Debe tener al menos una mayúscula';
+    if (p.length < 6) return 'La contraseña debe tener al menos 6 caracteres';
     if (!/[0-9]/.test(p)) return 'Debe tener al menos un número';
-    if (!/[!@#$%^&*(),.?":{}|<>]/.test(p)) return 'Debe tener al menos un símbolo (!@#$%^&*)';
     return '';
   };
 
@@ -99,7 +97,7 @@ export default function Register() {
         </div>
 
         <p style={{ fontSize: 12, color: '#64748b', marginTop: 6 }}>
-          Mínimo 8 caracteres, 1 mayúscula, 1 número y 1 símbolo.
+          Mínimo 6 caracteres y al menos 1 número.
         </p>
 
         {error && <p style={{ color: 'red', fontSize: 13 }}>{error}</p>}
