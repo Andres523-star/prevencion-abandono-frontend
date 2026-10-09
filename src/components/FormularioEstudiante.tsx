@@ -8,7 +8,7 @@ interface Props {
 export default function FormularioEstudiante({ onCreado }: Props) {
   const [nombre, setNombre] = useState('');
   const [carrera, setCarrera] = useState('');
-  const [semestre, setSemestre] = useState(1);
+  const [semestre, setSemestre] = useState('');
   const [email, setEmail] = useState('');
   const [riesgo, setRiesgo] = useState('BAJO');
   const [mensaje, setMensaje] = useState('');
@@ -19,14 +19,14 @@ export default function FormularioEstudiante({ onCreado }: Props) {
       await estudianteService.crear({
         nombre,
         carrera,
-        semestre,
+        semestre: Number(semestre),
         email,
         riesgoActual: riesgo,
       });
       setMensaje('Estudiante creado correctamente');
       setNombre('');
       setCarrera('');
-      setSemestre(1);
+      setSemestre('');
       setEmail('');
       setRiesgo('BAJO');
       onCreado();
@@ -36,43 +36,39 @@ export default function FormularioEstudiante({ onCreado }: Props) {
   };
 
   return (
-    <form onSubmit={enviar} style={{ marginTop: 20, padding: 20, background: '#fff', borderRadius: 8, maxWidth: 500 }}>
+    <form onSubmit={enviar} className="form-card">
       <h3>Nuevo Estudiante</h3>
 
-      <div style={{ marginBottom: 10 }}>
-        <label>Nombre: </label>
-        <input value={nombre} onChange={(e) => setNombre(e.target.value)} required style={{ width: '100%', padding: 6 }} />
-      </div>
+      <label>Nombre</label>
+      <input value={nombre} onChange={(e) => setNombre(e.target.value)} required placeholder="Ej: Juan Pérez" />
 
-      <div style={{ marginBottom: 10 }}>
-        <label>Carrera: </label>
-        <input value={carrera} onChange={(e) => setCarrera(e.target.value)} required style={{ width: '100%', padding: 6 }} />
-      </div>
+      <label>Carrera</label>
+      <input value={carrera} onChange={(e) => setCarrera(e.target.value)} required placeholder="Ej: Ingeniería" />
 
-      <div style={{ marginBottom: 10 }}>
-        <label>Semestre: </label>
-        <input type="number" min={1} max={12} value={semestre} onChange={(e) => setSemestre(Number(e.target.value))} required style={{ width: '100%', padding: 6 }} />
-      </div>
+      <label>Semestre</label>
+      <input
+        type="number"
+        min={1}
+        max={12}
+        value={semestre}
+        onChange={(e) => setSemestre(e.target.value)}
+        required
+        placeholder="Ej: 5"
+      />
 
-      <div style={{ marginBottom: 10 }}>
-        <label>Email: </label>
-        <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required style={{ width: '100%', padding: 6 }} />
-      </div>
+      <label>Email</label>
+      <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required placeholder="correo@ucc.edu.co" />
 
-      <div style={{ marginBottom: 10 }}>
-        <label>Riesgo: </label>
-        <select value={riesgo} onChange={(e) => setRiesgo(e.target.value)} style={{ width: '100%', padding: 6 }}>
-          <option value="BAJO">BAJO</option>
-          <option value="MEDIO">MEDIO</option>
-          <option value="ALTO">ALTO</option>
-        </select>
-      </div>
+      <label>Riesgo</label>
+      <select value={riesgo} onChange={(e) => setRiesgo(e.target.value)}>
+        <option value="BAJO">BAJO</option>
+        <option value="MEDIO">MEDIO</option>
+        <option value="ALTO">ALTO</option>
+      </select>
 
-      <button type="submit" style={{ padding: 10, width: '100%' }}>
-        Crear Estudiante
-      </button>
+      <button type="submit">Crear Estudiante</button>
 
-      {mensaje && <p style={{ marginTop: 10 }}>{mensaje}</p>}
+      {mensaje && <p className="mensaje">{mensaje}</p>}
     </form>
   );
 }
