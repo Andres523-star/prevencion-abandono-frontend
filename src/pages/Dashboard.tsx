@@ -1,12 +1,14 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { estudianteService } from '../services/api';
+import FormularioEstudiante from '../components/FormularioEstudiante';
 import type { Estudiante } from '../types';
 
 export default function Dashboard() {
   const [estudiantes, setEstudiantes] = useState<Estudiante[]>([]);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState('');
+  const [mostrarForm, setMostrarForm] = useState(false);
 
   useEffect(() => {
     cargar();
@@ -29,10 +31,20 @@ export default function Dashboard() {
   return (
     <div style={{ padding: 20 }}>
       <h1>Dashboard - Estudiantes</h1>
-      <Link to="/reportes">Ver Reportes</Link>
+
+      <div style={{ display: 'flex', gap: 15 }}>
+        <Link to="/reportes">Ver Reportes</Link>
+        <button onClick={() => setMostrarForm(!mostrarForm)} style={{ padding: '4px 10px' }}>
+          {mostrarForm ? 'Ocultar formulario' : '+ Nuevo Estudiante'}
+        </button>
+      </div>
+
+      {mostrarForm && (
+        <FormularioEstudiante onCreado={() => { cargar(); setMostrarForm(false); }} />
+      )}
 
       {estudiantes.length === 0 ? (
-        <p>No hay estudiantes registrados.</p>
+        <p style={{ marginTop: 20 }}>No hay estudiantes registrados.</p>
       ) : (
         <table border={1} cellPadding={8} style={{ marginTop: 20, borderCollapse: 'collapse' }}>
           <thead>
