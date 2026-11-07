@@ -1,0 +1,560 @@
+/* ============================================================
+   Ficha del estudiante · contexto, materias y plan con IA
+   ============================================================ */
+
+.volver {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 12px;
+  color: var(--tinta-suave);
+  font-size: 10.5px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.volver:hover {
+  color: var(--primario);
+}
+
+.ficha-hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 26px;
+  margin-bottom: 16px;
+  padding: 24px 26px;
+  border: 1px solid var(--borde);
+  border-top: 4px solid var(--primario);
+  border-radius: 19px;
+  background:
+    radial-gradient(circle at 90% 5%, rgba(20, 92, 78, 0.05), transparent 30%),
+    #ffffff;
+  box-shadow: 0 1px 2px rgba(16, 43, 36, 0.03);
+}
+
+.ficha-hero__persona {
+  display: flex;
+  align-items: center;
+  gap: 19px;
+  min-width: 0;
+}
+
+.ficha-hero__persona > div:last-child {
+  min-width: 0;
+}
+
+.ficha-hero__etiquetas {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 7px;
+}
+
+.ficha-hero h2 {
+  margin: 0 0 3px;
+  font-size: 31px;
+  line-height: 1.05;
+}
+
+.ficha-hero__persona p {
+  margin: 0;
+  color: var(--tinta-suave);
+  font-size: 10.5px;
+}
+
+.ficha-hero__acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 14px;
+}
+
+.ficha-hero__riesgo {
+  display: flex;
+  align-items: center;
+  gap: 17px;
+  flex-shrink: 0;
+  padding-left: 25px;
+  border-left: 1px solid var(--borde);
+}
+
+.ficha-hero__riesgo > div:last-child {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.ficha-hero__riesgo > div:last-child > span {
+  color: var(--tinta-tenue);
+  font-size: 8.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.ficha-hero__riesgo > div:last-child > strong {
+  font-family: var(--fuente-titulo);
+  font-size: 23px;
+  font-weight: 600;
+  line-height: 1.1;
+}
+
+.ficha-hero__riesgo small {
+  margin-top: 3px;
+  color: var(--tinta-suave);
+  font-size: 9px;
+  white-space: nowrap;
+}
+
+.medidor {
+  position: relative;
+  width: 108px;
+  height: 108px;
+  flex-shrink: 0;
+}
+
+.medidor__svg {
+  width: 100%;
+  height: 100%;
+}
+
+.medidor__centro {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  padding-top: 37px;
+  pointer-events: none;
+}
+
+.medidor__centro strong {
+  font-family: var(--fuente-titulo);
+  font-size: 25px;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.medidor__centro span {
+  color: var(--tinta-tenue);
+  font-size: 8.5px;
+  font-weight: 600;
+}
+
+.detalle-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+  gap: 16px;
+  align-items: start;
+}
+
+.detalle-columna {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+
+.detalle-columna--lateral {
+  position: sticky;
+  top: 96px;
+}
+
+.contexto {
+  margin: 0 0 16px;
+  padding: 12px 15px;
+  border-left: 3px solid var(--primario);
+  border-radius: 0 9px 9px 0;
+  background: #f8faf7;
+  color: #42564c;
+  font-size: 11.5px;
+  line-height: 1.65;
+}
+
+.datos-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.dato {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  min-width: 0;
+  padding: 9px 10px;
+  border: 1px solid #edf1ec;
+  border-radius: 9px;
+  background: #fbfcfa;
+}
+
+.dato__icono {
+  display: grid;
+  place-items: center;
+  width: 27px;
+  height: 27px;
+  flex-shrink: 0;
+  border-radius: 7px;
+  background: #eef4ef;
+  color: var(--primario);
+}
+
+.dato > div {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.dato span {
+  color: var(--tinta-tenue);
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.dato strong {
+  overflow-wrap: anywhere;
+  font-size: 10.5px;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+/* ---------- Materias ---------- */
+
+.materias {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.materia {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.materia__fila {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.materia__fila span {
+  font-size: 10.5px;
+  color: var(--tinta);
+}
+
+.materia__fila strong {
+  font-size: 10.5px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.materias__pie {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 3px;
+  padding-top: 11px;
+  border-top: 1px solid #edf1ec;
+  color: var(--tinta-suave);
+  font-size: 10px;
+}
+
+.materias__pie span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.materias__pie strong {
+  color: var(--tinta);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.grafica--historial {
+  height: 218px;
+}
+
+/* ---------- Plan con IA ---------- */
+
+.plan-ia {
+  overflow: hidden;
+  padding: 20px;
+  border-radius: 19px;
+  background:
+    radial-gradient(circle at 90% 0%, rgba(159, 216, 187, 0.16), transparent 36%),
+    linear-gradient(158deg, #0f4c40 0%, #0b3d34 60%, #092f28 100%);
+  box-shadow: 0 16px 34px rgba(12, 65, 55, 0.16);
+  color: #ffffff;
+}
+
+.plan-ia__cabecera {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.plan-ia__icono {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #b7e8cd;
+}
+
+.plan-ia__cabecera h3 {
+  margin: 0;
+  font-size: 18px;
+  color: #ffffff;
+}
+
+.plan-ia__cabecera p {
+  margin: 3px 0 0;
+  color: rgba(255, 255, 255, 0.48);
+  font-size: 9.5px;
+  line-height: 1.4;
+}
+
+.plan-ia__inicio > p {
+  margin: 0 0 12px;
+  color: rgba(255, 255, 255, 0.65);
+  font-size: 10.5px;
+  line-height: 1.6;
+}
+
+.plan-ia__pistas {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0 0 17px;
+  padding: 0;
+  list-style: none;
+}
+
+.plan-ia__pistas li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 9.5px;
+}
+
+.plan-ia__pistas svg {
+  color: #8fd9b8;
+}
+
+.plan-ia .boton--primario {
+  background: #d9f2e4;
+  border-color: #d9f2e4;
+  color: #0a3a31;
+  box-shadow: none;
+}
+
+.plan-ia .boton--primario:hover {
+  background: #ffffff;
+  border-color: #ffffff;
+}
+
+.plan-ia .boton--secundario {
+  background: rgba(255, 255, 255, 0.07);
+  border-color: rgba(255, 255, 255, 0.18);
+  color: rgba(255, 255, 255, 0.82);
+}
+
+.plan-ia .boton--secundario:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+}
+
+.plan-ia__cargando {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 11px;
+  padding: 26px 10px;
+  text-align: center;
+}
+
+.plan-ia__cargando .cargando__spinner {
+  border-color: rgba(255, 255, 255, 0.18);
+  border-top-color: #b7e8cd;
+}
+
+.plan-ia__cargando p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.58);
+  font-size: 10px;
+  line-height: 1.55;
+}
+
+.plan-ia__etiqueta {
+  display: block;
+  margin-bottom: 5px;
+  color: #8fd9b8;
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.plan-ia__recomendacion {
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.plan-ia__recomendacion p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.77);
+  font-size: 10.5px;
+  line-height: 1.65;
+}
+
+.plan-ia__acciones {
+  padding: 14px 0;
+}
+
+.plan-ia__acciones h4 {
+  margin: 0 0 9px;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.plan-ia__acciones ol {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.plan-ia__acciones li {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.plan-ia__acciones li > span {
+  display: grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  margin-top: 1px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  color: #b7e8cd;
+  font-size: 8px;
+  font-weight: 800;
+}
+
+.plan-ia__acciones li p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.66);
+  font-size: 9.7px;
+  line-height: 1.5;
+}
+
+.plan-ia__fuente {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 12px;
+  padding-top: 11px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 8px;
+}
+
+.plan-ia__fuente span:first-child {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.plan-ia .mensaje-error {
+  background: rgba(217, 85, 63, 0.18);
+  color: #ffd8cf;
+}
+
+/* ---------- Contacto rápido ---------- */
+
+.contacto-rapido {
+  padding: 17px 18px;
+}
+
+.contacto-rapido .panel__cabecera {
+  margin-bottom: 6px;
+}
+
+.contacto-rapido__fila {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 9px 4px;
+  border-bottom: 1px solid #eef2ed;
+  text-decoration: none;
+  color: inherit;
+  transition: background 0.13s ease;
+}
+
+.contacto-rapido__fila:last-child {
+  border-bottom: 0;
+}
+
+.contacto-rapido__fila:hover {
+  background: #f8fbf8;
+}
+
+.contacto-rapido__fila > span {
+  display: grid;
+  place-items: center;
+  width: 29px;
+  height: 29px;
+  flex-shrink: 0;
+  border-radius: 8px;
+  background: var(--primario-claro);
+  color: var(--primario);
+}
+
+.contacto-rapido__fila > div {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+  flex: 1;
+}
+
+.contacto-rapido__fila strong {
+  font-size: 10.5px;
+  font-weight: 700;
+}
+
+.contacto-rapido__fila small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--tinta-tenue);
+  font-size: 8.5px;
+}
+
+.contacto-rapido__fila > svg {
+  color: #b4c2ba;
+  flex-shrink: 0;
+}
