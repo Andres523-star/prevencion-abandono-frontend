@@ -1,0 +1,396 @@
+/* ============================================================
+   Componentes compartidos
+   ============================================================ */
+
+/* ---------- Avatares ---------- */
+
+.avatar {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border-radius: 50%;
+  color: #ffffff;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  user-select: none;
+}
+
+.avatar--xs {
+  width: 27px;
+  height: 27px;
+  font-size: 9.5px;
+}
+
+.avatar--sm {
+  width: 36px;
+  height: 36px;
+  font-size: 11.5px;
+}
+
+.avatar--md {
+  width: 44px;
+  height: 44px;
+  font-size: 13.5px;
+}
+
+.avatar--lg {
+  width: 58px;
+  height: 58px;
+  font-size: 17px;
+}
+
+.avatar--xl {
+  width: 84px;
+  height: 84px;
+  font-size: 25px;
+}
+
+.avatar__punto {
+  position: absolute;
+  right: 0;
+  bottom: 1px;
+  width: 10px;
+  height: 10px;
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+}
+
+.avatar--xs .avatar__punto {
+  width: 8px;
+  height: 8px;
+  border-width: 1.5px;
+}
+
+/* ---------- Badges de riesgo y estado ---------- */
+
+.riesgo-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 8px;
+  border-radius: 100px;
+  font-size: 9.5px;
+  font-weight: 800;
+  letter-spacing: 0.07em;
+  line-height: 1;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.riesgo-badge--alto {
+  background: #fbeae6;
+  color: #b53c27;
+}
+
+.riesgo-badge--medio {
+  background: #fbf2da;
+  color: #966713;
+}
+
+.riesgo-badge--bajo {
+  background: #e6f4ed;
+  color: #1f6e50;
+}
+
+.riesgo-badge__punto {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+}
+
+.riesgo-badge--compacto {
+  padding: 3px 7px;
+  font-size: 8.5px;
+}
+
+.estado-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 8px;
+  border-radius: 100px;
+  font-size: 9.5px;
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.estado-badge--activo {
+  background: #edf4ef;
+  color: #3d6a53;
+}
+
+.estado-badge--aplazado {
+  background: #fbf2da;
+  color: #8d641a;
+}
+
+.estado-badge--retirado {
+  background: #f1eeee;
+  color: #8b5a52;
+}
+
+.chip-causa {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  border-radius: 7px;
+  background: #f3f6f2;
+  color: #4f6159;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.chip-causa i {
+  width: 6px;
+  height: 6px;
+  flex-shrink: 0;
+  border-radius: 50%;
+}
+
+/* ---------- Cargando y vacío ---------- */
+
+.cargando {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-height: 220px;
+  padding: 32px 20px;
+  color: var(--tinta-suave);
+}
+
+.cargando p {
+  margin: 0;
+  font-size: 11.5px;
+  font-weight: 600;
+}
+
+.cargando__spinner {
+  width: 26px;
+  height: 26px;
+  border: 2.5px solid #dfe8e0;
+  border-top-color: var(--primario);
+  border-radius: 50%;
+  animation: girar 0.75s linear infinite;
+}
+
+.vacio {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  min-height: 260px;
+  padding: 40px 24px;
+  text-align: center;
+}
+
+.vacio__icono {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  margin-bottom: 2px;
+  border-radius: 16px;
+  background: var(--primario-claro);
+  color: var(--primario);
+}
+
+.vacio h3 {
+  margin: 0;
+  font-family: var(--fuente);
+  font-size: 14.5px;
+  font-weight: 800;
+}
+
+.vacio p {
+  max-width: 330px;
+  margin: 0 0 6px;
+  font-size: 11.5px;
+  line-height: 1.6;
+  color: var(--tinta-suave);
+}
+
+/* ---------- Barra de progreso ---------- */
+
+.barra-progreso {
+  width: 100%;
+  height: 6px;
+  overflow: hidden;
+  border-radius: 10px;
+  background: #edf1ec;
+}
+
+.barra-progreso__relleno {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  transition: width 0.5s ease;
+}
+
+/* ---------- Modal ---------- */
+
+.modal-fondo {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(8, 32, 26, 0.56);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  animation: aparecer 0.15s ease-out;
+}
+
+.modal {
+  display: flex;
+  flex-direction: column;
+  width: min(100%, 680px);
+  max-height: min(90dvh, 860px);
+  overflow: hidden;
+  border-radius: 18px;
+  background: #ffffff;
+  box-shadow: var(--sombra-alta);
+  animation: deslizar 0.2s ease-out;
+}
+
+.modal--amplio {
+  width: min(100%, 820px);
+}
+
+.modal__cabecera {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 22px 24px 16px;
+  border-bottom: 1px solid var(--borde);
+}
+
+.modal__cabecera h2 {
+  margin: 0;
+  font-size: 24px;
+  line-height: 1.1;
+}
+
+.modal__cabecera p {
+  margin: 5px 0 0;
+  font-size: 11.5px;
+  color: var(--tinta-suave);
+}
+
+.modal__cuerpo {
+  overflow-y: auto;
+  padding: 20px 24px 24px;
+}
+
+.modal__pie {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 9px;
+  padding: 15px 24px;
+  border-top: 1px solid var(--borde);
+  background: #fbfcfa;
+}
+
+/* ---------- Toasts ---------- */
+
+.toast-stack {
+  position: fixed;
+  right: 22px;
+  bottom: 22px;
+  z-index: 120;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  width: min(380px, calc(100vw - 32px));
+  pointer-events: none;
+}
+
+.toast {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 11px 12px;
+  border: 1px solid var(--borde);
+  border-radius: 12px;
+  background: #ffffff;
+  box-shadow: var(--sombra-alta);
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--tinta);
+  pointer-events: auto;
+  animation: deslizar 0.2s ease-out;
+}
+
+.toast__icono {
+  display: grid;
+  place-items: center;
+  width: 27px;
+  height: 27px;
+  flex-shrink: 0;
+  border-radius: 8px;
+}
+
+.toast--exito .toast__icono {
+  background: #e6f4ed;
+  color: var(--verde);
+}
+
+.toast--error .toast__icono {
+  background: #fbeae6;
+  color: var(--rojo);
+}
+
+.toast--info .toast__icono {
+  background: #eaf0f8;
+  color: var(--azul);
+}
+
+.toast > span:nth-child(2) {
+  flex: 1;
+  line-height: 1.45;
+}
+
+.toast__cerrar {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--tinta-tenue);
+}
+
+.toast__cerrar:hover {
+  background: #f1f5f0;
+  color: var(--tinta);
+}
+
+/* ---------- Popover de usuario / detalles menores ---------- */
+
+.panel__etiqueta {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 8px;
+  border: 1px solid var(--borde);
+  border-radius: 100px;
+  background: #f8faf7;
+  color: var(--tinta-suave);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
