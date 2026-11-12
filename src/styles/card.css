@@ -1,0 +1,42 @@
+.ui-card {
+  background: #ffffff;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+}
+
+.ui-card-header {
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid #f3f4f6;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.ui-card-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #111827;
+  margin: 0;
+}
+
+.ui-card-subtitle {
+  font-size: 0.8125rem;
+  color: #6b7280;
+  margin: 0.2rem 0 0 0;
+}
+
+.ui-card-body {
+  padding: 1.25rem;
+  flex: 1 1 auto;
+}
+
+.ui-card-footer {
+  padding: 0.75rem 1.25rem;
+  background: #f9fafb;
+  border-top: 1px solid #f3f4f6;
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+}
