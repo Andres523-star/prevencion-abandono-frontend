@@ -4,33 +4,74 @@ import { useAuth } from '../auth/AuthContext'
 import { AuthAside } from '../components/AuthAside'
 import { Icon } from '../components/Icon'
 import { mensajeError } from '../services/api'
+import {
+  ETIQUETAS_ROL,
+  ROLES_CON_SEDE,
+  SEDES_UCC,
+  type Rol,
+} from '../types'
 
-const CUENTAS_DEMO = [
-  { rol: 'Andrés Felipe', email: 'facb129@gmail.com', password: 'Permanencia2026' },
-  { rol: 'Docente', email: 'esteban@universidad.edu.co', password: 'demo123' },
-  { rol: 'Coordinación', email: 'coordinacion@universidad.edu.co', password: 'demo123' },
+/** Orden de los roles en el selector de acceso. */
+const ORDEN_ROLES: Rol[] = [
+  'ESTUDIANTE',
+  'PROFESOR',
+  'JEFE_PROGRAMA',
+  'COORDINADOR_SEDE',
+  'DECANO',
+  'RECTOR',
+]
+
+/** Cuentas ficticias para recorrer la demo sin escribir credenciales. */
+const CUENTAS_DEMO: Array<{
+  rol: Rol
+  email: string
+  password: string
+  sede?: string
+  etiqueta?: string
+}> = [
+  { rol: 'ESTUDIANTE', email: 'estudiante@ucc.edu.co', password: 'Estudiante2026', sede: 'Pasto' },
+  { rol: 'PROFESOR', email: 'profesor@ucc.edu.co', password: 'Profesor2026', sede: 'Bogotá' },
+  {
+    rol: 'JEFE_PROGRAMA',
+    email: 'jefe.programa@ucc.edu.co',
+    password: 'Programa2026',
+    sede: 'Medellín',
+  },
+  {
+    rol: 'COORDINADOR_SEDE',
+    email: 'coordinador.sede@ucc.edu.co',
+    password: 'Coordinador2026',
+    sede: 'Bogotá',
+    etiqueta: 'Coordinador de Sede',
+  },
+  { rol: 'DECANO', email: 'decano@ucc.edu.co', password: 'Decano2026', sede: 'Pasto' },
+  { rol: 'RECTOR', email: 'rector@ucc.edu.co', password: 'Rector2026' },
 ]
 
 export function Login() {
   const { sesion, iniciarSesion } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
-  const [email, setEmail] = useState('facb129@gmail.com')
-  const [password, setPassword] = useState('Permanencia2026')
+  const [rol, setRol] = useState<Rol>('ESTUDIANTE')
+  const [sede, setSede] = useState('Bogotá')
+  const [email, setEmail] = useState(CUENTAS_DEMO[0].email)
+  const [password, setPassword] = useState(CUENTAS_DEMO[0].password)
   const [verPassword, setVerPassword] = useState(false)
   const [cargando, setCargando] = useState(false)
   const [error, setError] = useState('')
 
   if (sesion) return <Navigate to="/" replace />
 
-  const destino = (location.state as { from?: { pathname?: string } } | null)?.from?.pathname || '/'
+  const destino = (location.state as { from?: { pathname?: string } } | null)?.from?.pathname
+    || (rol === 'ESTUDIANTE' ? '/reportes' : '/')
+  const requiereSede = ROLES_CON_SEDE.includes(rol)
 
   const enviar = async (evento: FormEvent) => {
     evento.preventDefault()
     setError('')
     setCargando(true)
     try {
-      await iniciarSesion(email.trim(), password)
+      await iniciarSesion(email.trim(), password, rol, requiereSede ? sede : undefined)
       navigate(destino, { replace: true })
     } catch (err) {
       setError(mensajeError(err))
@@ -39,9 +80,22 @@ export function Login() {
     }
   }
 
+  const elegirRol = (nuevoRol: Rol) => {
+    setRol(nuevoRol)
+    const cuenta = CUENTAS_DEMO.find((item) => item.rol === nuevoRol)
+    if (cuenta) {
+      setEmail(cuenta.email)
+      setPassword(cuenta.password)
+      if (cuenta.sede) setSede(cuenta.sede)
+    }
+    setError('')
+  }
+
   const usarCuenta = (cuenta: (typeof CUENTAS_DEMO)[number]) => {
+    setRol(cuenta.rol)
     setEmail(cuenta.email)
     setPassword(cuenta.password)
+    if (cuenta.sede) setSede(cuenta.sede)
     setError('')
   }
 
@@ -54,10 +108,47 @@ export function Login() {
           <header className="auth-formulario__cabecera">
             <p className="auth-formulario__eyebrow">Bienvenido de nuevo</p>
             <h2>Inicia sesión</h2>
-            <p>Entra para revisar cómo están tus estudiantes hoy.</p>
+            <p>Elige tu rol: los datos que verás dependen de él.</p>
           </header>
 
-          <form onSubmit={enviar} className="formulario">
+          <form onSubmit={enviar} className="formulario" autoComplete="off">
+            <label className="campo">
+              <span>Rol de acceso</span>
+              <div className="campo__control">
+                <Icon name="shield" size={18} />
+                <select value={rol} onChange={(evento) => elegirRol(evento.target.value as Rol)}>
+                  {ORDEN_ROLES.map((valor) => (
+                    <option key={valor} value={valor}>
+                      {ETIQUETAS_ROL[valor]}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </label>
+
+            {requiereSede && (
+              <label className="campo">
+                <span>Sede</span>
+                <div className="campo__control">
+                  <Icon name="mapPin" size={18} />
+                  <select value={sede} onChange={(evento) => setSede(evento.target.value)}>
+                    {SEDES_UCC.map((nombre) => (
+                      <option key={nombre} value={nombre}>
+                        {nombre}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <small className="campo__ayuda">
+                  {rol === 'DECANO'
+                    ? 'El decano conserva la facultad completa en todas las sedes; la sede es solo referencial.'
+                    : rol === 'ESTUDIANTE'
+                      ? 'Tu cuenta está asociada a una sede; aquí puedes confirmarla.'
+                      : 'La sede ajusta el alcance de los datos que verás.'}
+                </small>
+              </label>
+            )}
+
             <label className="campo">
               <span>Correo institucional</span>
               <div className="campo__control">
@@ -66,8 +157,8 @@ export function Login() {
                   type="email"
                   value={email}
                   onChange={(evento) => setEmail(evento.target.value)}
-                  placeholder="tu.nombre@universidad.edu.co"
-                  autoComplete="email"
+                  placeholder="tu.nombre@ucc.edu.co"
+                  autoComplete="off"
                   required
                 />
               </div>
@@ -82,7 +173,7 @@ export function Login() {
                   value={password}
                   onChange={(evento) => setPassword(evento.target.value)}
                   placeholder="Tu contraseña"
-                  autoComplete="current-password"
+                  autoComplete="new-password"
                   required
                 />
                 <button
@@ -116,24 +207,35 @@ export function Login() {
             <div className="cuentas-demo__botones">
               {CUENTAS_DEMO.map((cuenta) => (
                 <button
-                  key={cuenta.email}
+                  key={`${cuenta.rol}-${cuenta.sede ?? 'nacional'}`}
                   type="button"
-                  className="cuenta-demo"
+                  className={`cuenta-demo${
+                    rol === cuenta.rol && (!cuenta.sede || cuenta.sede === sede)
+                      ? ' cuenta-demo--activa'
+                      : ''
+                  }`}
                   onClick={() => usarCuenta(cuenta)}
+                  title={`${cuenta.email} · ${cuenta.password}`}
                 >
-                  <Icon name="user" size={16} />
+                  <Icon name={cuenta.sede ? 'mapPin' : 'shield'} size={15} />
                   <span>
-                    <strong>{cuenta.rol}</strong>
+                    <strong>{cuenta.etiqueta ?? ETIQUETAS_ROL[cuenta.rol]}</strong>
                     <small>{cuenta.email}</small>
+                    <small className="cuenta-demo__clave">
+                      {cuenta.sede ? `${cuenta.sede} · ${cuenta.password}` : cuenta.password}
+                    </small>
                   </span>
                 </button>
               ))}
             </div>
-            <p className="cuentas-demo__nota">Contraseña para ambas cuentas: <code>demo123</code></p>
+            <p className="cuentas-demo__nota">
+              Elige un cargo y el correo y la contraseña se completan solos. También puedes
+              escribirlos a mano.
+            </p>
           </div>
 
           <p className="auth-enlace">
-            ¿No tienes cuenta? <Link to="/registro">Crea una cuenta de docente</Link>
+            ¿No tienes cuenta? <Link to="/registro">Crea una cuenta</Link>
           </p>
         </div>
       </main>

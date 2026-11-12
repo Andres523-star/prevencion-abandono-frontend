@@ -56,9 +56,9 @@ export function AuthAside() {
       </div>
 
       <div className="auth-aside__pie">
-        <span>600 estudiantes</span>
-        <span>5 causas de riesgo</span>
-        <span>6 programas</span>
+        <span>1.109.845 estudiantes</span>
+        <span>17 sedes</span>
+        <span>23 programas</span>
       </div>
     </aside>
   )

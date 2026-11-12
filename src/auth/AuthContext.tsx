@@ -6,7 +6,7 @@ const CLAVE_SESION = 'permanencia.sesion'
 
 interface AuthContexto {
   sesion: Sesion | null
-  iniciarSesion: (email: string, password: string) => Promise<void>
+  iniciarSesion: (email: string, password: string, rol?: string, sede?: string | null) => Promise<void>
   registrarse: (datos: {
     nombre: string
     apellido: string
@@ -38,8 +38,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => window.removeEventListener('permanencia:sesion-expirada', expirar)
   }, [])
 
-  const iniciarSesion = useCallback(async (email: string, password: string) => {
-    const nueva = await authApi.login(email, password)
+  const iniciarSesion = useCallback(async (
+    email: string,
+    password: string,
+    rol?: string,
+    sede?: string | null,
+  ) => {
+    const nueva = await authApi.login(email, password, rol, sede)
     localStorage.setItem(CLAVE_SESION, JSON.stringify(nueva))
     setSesion(nueva)
   }, [])

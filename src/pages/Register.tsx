@@ -13,7 +13,7 @@ export function Register() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmacion, setConfirmacion] = useState('')
-  const [rol, setRol] = useState<'DOCENTE' | 'COORDINADOR'>('DOCENTE')
+  const [rol, setRol] = useState<'PROFESOR' | 'COORDINADOR_SEDE'>('PROFESOR')
   const [verPassword, setVerPassword] = useState(false)
   const [cargando, setCargando] = useState(false)
   const [error, setError] = useState('')
@@ -104,19 +104,19 @@ export function Register() {
               <div className="selector-rol">
                 <button
                   type="button"
-                  className={`opcion-rol${rol === 'DOCENTE' ? ' opcion-rol--activa' : ''}`}
-                  onClick={() => setRol('DOCENTE')}
+                  className={`opcion-rol${rol === 'PROFESOR' ? ' opcion-rol--activa' : ''}`}
+                  onClick={() => setRol('PROFESOR')}
                 >
                   <Icon name="book" size={18} />
                   <span>
-                    <strong>Docente</strong>
+                    <strong>Profesor</strong>
                     <small>Acompaño estudiantes</small>
                   </span>
                 </button>
                 <button
                   type="button"
-                  className={`opcion-rol${rol === 'COORDINADOR' ? ' opcion-rol--activa' : ''}`}
-                  onClick={() => setRol('COORDINADOR')}
+                  className={`opcion-rol${rol === 'COORDINADOR_SEDE' ? ' opcion-rol--activa' : ''}`}
+                  onClick={() => setRol('COORDINADOR_SEDE')}
                 >
                   <Icon name="chart" size={18} />
                   <span>

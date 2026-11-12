@@ -272,6 +272,12 @@
   color: var(--primario);
 }
 
+.cuenta-demo--activa {
+  border-color: var(--primario);
+  background: var(--primario-claro);
+  box-shadow: inset 0 0 0 1px rgba(15, 76, 64, 0.12);
+}
+
 .cuenta-demo span {
   display: flex;
   flex-direction: column;
@@ -286,10 +292,16 @@
 }
 
 .cuenta-demo small {
-  overflow: hidden;
-  text-overflow: ellipsis;
   font-size: 8.5px;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
   color: var(--tinta-tenue);
+}
+
+.cuenta-demo__clave {
+  color: var(--primario-oscuro) !important;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-weight: 700;
 }
 
 .cuentas-demo__nota {
