@@ -1,15 +1,23 @@
 import axios, { type AxiosError } from 'axios'
 import type {
+  AccionAcompanamiento,
   Analisis,
+  CapacidadesIA,
+  Catalogo,
   Conversacion,
   Estudiante,
   EstudianteNuevo,
   FiltrosEstudiante,
   FiltrosReporte,
+  Justificacion,
+  JustificacionNueva,
   Mensaje,
+  MensajeHistorialIA,
   MensajeNuevo,
   Notificacion,
+  PerfilEstudiante,
   Reporte,
+  RespuestaIA,
   Sesion,
 } from '../types'
 
@@ -55,8 +63,8 @@ export function mensajeError(error: unknown): string {
 }
 
 export const authApi = {
-  async login(email: string, password: string): Promise<Sesion> {
-    const { data } = await api.post<Sesion>('/auth/login', { email, password })
+  async login(email: string, password: string, rol?: string, sede?: string | null): Promise<Sesion> {
+    const { data } = await api.post<Sesion>('/auth/login', { email, password, rol, sede })
     return data
   },
   async registrar(datos: {
@@ -93,9 +101,18 @@ export const reportesApi = {
   },
 }
 
+export const catalogosApi = {
+  async obtener(): Promise<Catalogo> {
+    const { data } = await api.get<Catalogo>('/catalogos')
+    return data
+  },
+}
+
 export const notificacionesApi = {
-  async listar(): Promise<Notificacion[]> {
-    const { data } = await api.get<Notificacion[]>('/notificaciones')
+  async listar(grupo?: string): Promise<Notificacion[]> {
+    const { data } = await api.get<Notificacion[]>('/notificaciones', {
+      params: grupo ? { grupo } : undefined,
+    })
     return data
   },
   async marcarLeida(id: number): Promise<void> {
@@ -128,5 +145,97 @@ export const analisisApi = {
   async analizar(estudianteId: number): Promise<Analisis> {
     const { data } = await api.post<Analisis>(`/analizar/${estudianteId}`)
     return data
+  },
+}
+
+export const acompanamientoApi = {
+  async listar(estudianteId: number): Promise<AccionAcompanamiento[]> {
+    const { data } = await api.get<AccionAcompanamiento[]>(`/estudiantes/${estudianteId}/acompanamiento`)
+    return data
+  },
+  async actualizar(
+    estudianteId: number,
+    accionId: number,
+    estado: AccionAcompanamiento['estado'],
+  ): Promise<AccionAcompanamiento> {
+    const { data } = await api.put<AccionAcompanamiento>(
+      `/estudiantes/${estudianteId}/acompanamiento/${accionId}`,
+      { estado },
+    )
+    return data
+  },
+}
+
+export const perfilApi = {
+  async obtener(estudianteId: number): Promise<PerfilEstudiante> {
+    const { data } = await api.get<PerfilEstudiante>(`/estudiantes/${estudianteId}/perfil`)
+    return data
+  },
+}
+
+export const iaApi = {
+  async capacidades(): Promise<CapacidadesIA> {
+    const { data } = await api.get<CapacidadesIA>('/ia/capacidades')
+    return data
+  },
+  async consultar(mensaje: string): Promise<RespuestaIA> {
+    const { data } = await api.post<RespuestaIA>('/ia/consultar', { mensaje })
+    return data
+  },
+  async historial(): Promise<MensajeHistorialIA[]> {
+    const { data } = await api.get<MensajeHistorialIA[]>('/ia/historial')
+    return data
+  },
+  async limpiarHistorial(): Promise<{ eliminados: number }> {
+    const { data } = await api.delete<{ eliminados: number }>('/ia/historial')
+    return data
+  },
+}
+
+export const justificacionesApi = {
+  async listar(): Promise<Justificacion[]> {
+    const { data } = await api.get<Justificacion[]>('/justificaciones')
+    return data
+  },
+  async correo(): Promise<{ correo: string; recordatorio: string }> {
+    const { data } = await api.get<{ correo: string; recordatorio: string }>('/justificaciones/correo')
+    return data
+  },
+  async crear(datos: JustificacionNueva): Promise<Justificacion> {
+    const { data } = await api.post<Justificacion>('/justificaciones', datos)
+    return data
+  },
+}
+
+/** Descargas reales: pide el archivo con el token y dispara la descarga en el navegador. */
+export const descargasApi = {
+  async descargar(ruta: string, params: object = {}, nombre?: string): Promise<void> {
+    const { data, headers } = await api.get<Blob>(ruta, { params, responseType: 'blob' })
+    const disposicion = String(headers['content-disposition'] ?? '')
+    const encontrado = /filename="?([^";]+)"?/i.exec(disposicion)
+    const archivo = nombre ?? (encontrado ? encontrado[1] : 'permanencia.csv')
+    const url = URL.createObjectURL(data)
+    const enlace = document.createElement('a')
+    enlace.href = url
+    enlace.download = archivo
+    document.body.appendChild(enlace)
+    enlace.click()
+    enlace.remove()
+    URL.revokeObjectURL(url)
+  },
+  estudiantes(filtros: FiltrosEstudiante = {}): Promise<void> {
+    return descargasApi.descargar('/export/estudiantes.csv', filtros)
+  },
+  reporte(filtros: FiltrosReporte = {}): Promise<void> {
+    return descargasApi.descargar('/export/reporte.csv', filtros)
+  },
+  fichaCsv(id: number): Promise<void> {
+    return descargasApi.descargar(`/export/estudiantes/${id}/ficha.csv`)
+  },
+  fichaHtml(id: number): Promise<void> {
+    return descargasApi.descargar(`/export/estudiantes/${id}/ficha.html`)
+  },
+  todo(filtros: FiltrosReporte = {}): Promise<void> {
+    return descargasApi.descargar('/export/todo.zip', filtros)
   },
 }
