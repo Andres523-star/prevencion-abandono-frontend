@@ -1,0 +1,21 @@
+.ui-notif-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background: #ef4444;
+  color: white;
+  border-radius: 9999px;
+  padding: 0.15rem 0.35rem;
+  font-size: 0.65rem;
+  font-weight: 700;
+  line-height: 1;
+  border: 2px solid white;
+}
+
+.ui-notif-badge.dot {
+  width: 8px;
+  height: 8px;
+  padding: 0;
+  top: 0;
+  right: 0;
+}
