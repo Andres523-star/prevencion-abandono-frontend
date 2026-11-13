@@ -1,0 +1,24 @@
+.ui-circle-progress {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ui-circle-bg {
+  fill: none;
+  stroke: #e5e7eb;
+}
+
+.ui-circle-val {
+  fill: none;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.5s ease;
+}
+
+.ui-circle-label {
+  position: absolute;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #1f2937;
+}
