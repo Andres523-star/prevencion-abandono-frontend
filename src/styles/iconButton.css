@@ -1,0 +1,35 @@
+.ui-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: #4b5563;
+  transition: all 0.2s;
+}
+
+.ui-icon-btn-ghost:hover {
+  background: #f3f4f6;
+  color: #111827;
+}
+
+.ui-icon-btn-outline {
+  border: 1px solid #d1d5db;
+}
+
+.ui-icon-btn-outline:hover {
+  background: #f9fafb;
+}
+
+.ui-icon-btn-solid {
+  background: #2563eb;
+  color: white;
+}
+
+.ui-icon-btn-solid:hover {
+  background: #1d4ed8;
+}
