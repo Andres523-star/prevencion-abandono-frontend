@@ -1,0 +1,29 @@
+.ui-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.2rem 0.55rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.ui-tag-blue   { background: #e0f2fe; color: #0369a1; }
+.ui-tag-green  { background: #dcfce7; color: #15803d; }
+.ui-tag-amber  { background: #fef3c7; color: #b45309; }
+.ui-tag-red    { background: #fee2e2; color: #b91c1c; }
+.ui-tag-purple { background: #f3e8ff; color: #7e22ce; }
+.ui-tag-gray   { background: #f3f4f6; color: #4b5563; }
+
+.ui-tag-close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.9rem;
+  line-height: 1;
+  padding: 0;
+  color: inherit;
+  opacity: 0.7;
+}
+
+.ui-tag-close:hover { opacity: 1; }
