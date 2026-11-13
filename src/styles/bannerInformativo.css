@@ -1,0 +1,22 @@
+.ui-banner-info {
+  background: #1e3a8a;
+  color: white;
+  padding: 0.6rem 1rem;
+  border-radius: 6px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.8125rem;
+  margin-bottom: 1rem;
+}
+
+.ui-banner-link {
+  color: #93c5fd;
+  text-decoration: none;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.ui-banner-link:hover {
+  text-decoration: underline;
+}
