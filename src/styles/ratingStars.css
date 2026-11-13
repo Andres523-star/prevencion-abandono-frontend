@@ -1,0 +1,22 @@
+.ui-rating-stars {
+  display: inline-flex;
+  gap: 0.2rem;
+}
+
+.ui-star-btn {
+  background: none;
+  border: none;
+  font-size: 1.25rem;
+  color: #d1d5db;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+}
+
+.ui-star-btn.filled {
+  color: #f59e0b;
+}
+
+.ui-star-btn.readonly {
+  cursor: default;
+}
