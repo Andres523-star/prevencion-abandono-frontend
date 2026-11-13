@@ -305,6 +305,12 @@ h3 {
   padding: 0;
 }
 
+.campo__ayuda {
+  color: var(--tinta-tenue);
+  font-size: 9.5px;
+  line-height: 1.45;
+}
+
 .campo__control {
   display: flex;
   align-items: center;

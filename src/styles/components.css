@@ -394,3 +394,40 @@
   text-transform: uppercase;
   white-space: nowrap;
 }
+
+/* ---------- Lista de estudiantes dentro del modal ---------- */
+
+.lista-prioritarios--modal {
+  gap: 4px;
+}
+
+.lista-prioritarios--modal .fila-prioritaria {
+  padding: 10px 11px;
+  border: 1px solid transparent;
+  border-radius: 11px;
+}
+
+.lista-prioritarios--modal .fila-prioritaria:hover {
+  border-color: #e4ece6;
+  background: #f7faf7;
+}
+
+.modal__mas {
+  align-self: center;
+  margin: 8px auto 2px;
+}
+
+.modal__pie-resumen {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-right: auto;
+  color: var(--tinta-suave);
+  font-size: 9.5px;
+  font-weight: 600;
+}
+
+.modal__pie-resumen svg {
+  flex-shrink: 0;
+  color: var(--primario);
+}

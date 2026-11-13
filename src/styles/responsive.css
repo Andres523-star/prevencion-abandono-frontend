@@ -185,7 +185,7 @@
   .chat {
     grid-template-columns: minmax(0, 1fr);
     height: calc(100dvh - 128px);
-    min-height: 460px;
+    min-height: min(460px, calc(100dvh - 110px));
   }
 
   .chat-lista {
@@ -369,12 +369,12 @@
 
   .grafica--semestres,
   .grafica--reporte {
-    height: 250px;
+    height: 280px;
   }
 
   .grafica--categorias,
   .grafica--carreras {
-    height: 240px;
+    height: 270px;
   }
 
   .insight {
@@ -486,7 +486,7 @@
 
   .chat {
     height: calc(100dvh - 106px);
-    min-height: 420px;
+    min-height: min(420px, calc(100dvh - 88px));
     border-radius: 14px;
   }
 

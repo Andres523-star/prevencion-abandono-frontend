@@ -3,11 +3,25 @@ import { useNavigate } from 'react-router-dom'
 import { notificacionesApi } from '../services/api'
 import type { Notificacion } from '../types'
 import { hace } from '../utils/format'
-import { Icon } from './Icon'
+import { Icon, type IconName } from './Icon'
 import { RiesgoBadge } from './Ui'
 
+const ICONO_TIPO: Record<string, IconName> = {
+  RIESGO: 'alert',
+  ASISTENCIA: 'clock',
+  ACADEMICO: 'book',
+  MATERIA: 'book',
+  CITA: 'calendar',
+  RESUMEN: 'chart',
+}
+
+/**
+ * Campanita personalizada: la lista cambia según el rol y el alcance del usuario. Incluye un
+ * filtro por grupo A/B para revisar las alertas de cada grupo del semestre.
+ */
 export function CampanaNotificaciones() {
   const [abierto, setAbierto] = useState(false)
+  const [grupo, setGrupo] = useState('')
   const [notificaciones, setNotificaciones] = useState<Notificacion[]>([])
   const [cargando, setCargando] = useState(true)
   const contenedor = useRef<HTMLDivElement>(null)
@@ -17,7 +31,7 @@ export function CampanaNotificaciones() {
     let activo = true
     const cargar = async () => {
       try {
-        const datos = await notificacionesApi.listar()
+        const datos = await notificacionesApi.listar(grupo || undefined)
         if (activo) setNotificaciones(datos)
       } catch {
         // La campanita no debe romper la navegación si el backend se cae.
@@ -31,7 +45,7 @@ export function CampanaNotificaciones() {
       activo = false
       window.clearInterval(intervalo)
     }
-  }, [])
+  }, [grupo])
 
   useEffect(() => {
     if (!abierto) return
@@ -63,7 +77,7 @@ export function CampanaNotificaciones() {
       }
     }
     setAbierto(false)
-    navigate(`/estudiantes/${notificacion.estudianteId}`)
+    if (notificacion.estudianteId > 0) navigate(`/estudiantes/${notificacion.estudianteId}`)
   }
 
   const marcarTodas = async () => {
@@ -92,8 +106,8 @@ export function CampanaNotificaciones() {
         <div className="campana__panel">
           <header className="campana__cabecera">
             <div>
-              <h3>Alertas de permanencia</h3>
-              <p>{noLeidas > 0 ? `${noLeidas} sin leer` : 'Todo al día'}</p>
+              <h3>Mis notificaciones</h3>
+              <p>{noLeidas > 0 ? `${noLeidas} sin leer para tu cuenta` : 'Todo al día'}</p>
             </div>
             {noLeidas > 0 && (
               <button type="button" className="boton-texto" onClick={marcarTodas}>
@@ -102,13 +116,32 @@ export function CampanaNotificaciones() {
             )}
           </header>
 
+          <div className="campana__grupos" role="tablist" aria-label="Filtrar por grupo">
+            {[
+              { valor: '', etiqueta: 'Todos' },
+              { valor: 'A', etiqueta: 'Grupo A' },
+              { valor: 'B', etiqueta: 'Grupo B' },
+            ].map((opcion) => (
+              <button
+                key={opcion.valor}
+                type="button"
+                role="tab"
+                aria-selected={grupo === opcion.valor}
+                className={`campana__grupo${grupo === opcion.valor ? ' campana__grupo--activo' : ''}`}
+                onClick={() => setGrupo(opcion.valor)}
+              >
+                {opcion.etiqueta}
+              </button>
+            ))}
+          </div>
+
           <div className="campana__lista">
             {cargando ? (
               <p className="campana__vacia">Cargando alertas…</p>
             ) : notificaciones.length === 0 ? (
               <div className="campana__vacia">
                 <Icon name="check" size={22} />
-                <span>No hay alertas pendientes.</span>
+                <span>No hay alertas para este grupo.</span>
               </div>
             ) : (
               notificaciones.map((notificacion) => (
@@ -123,27 +156,35 @@ export function CampanaNotificaciones() {
                   }}
                 >
                   <span className="alerta__icono">
-                    <Icon name="alert" size={17} />
+                    <Icon name={ICONO_TIPO[notificacion.tipo] ?? 'alert'} size={17} />
                   </span>
                   <div className="alerta__contenido">
                     <div className="alerta__fila">
-                      <strong>{notificacion.nombre}</strong>
-                      <RiesgoBadge riesgo={notificacion.riesgo} compacto />
+                      <strong>{notificacion.titulo}</strong>
+                      {notificacion.riesgo && (
+                        <RiesgoBadge riesgo={notificacion.riesgo} compacto />
+                      )}
                     </div>
                     <p>{notificacion.motivo}</p>
                     <div className="alerta__meta">
-                      <span>{notificacion.carrera} · {notificacion.semestre}°</span>
+                      <span>
+                        {notificacion.nombre}
+                        {notificacion.grupo ? ` · Grupo ${notificacion.grupo}` : ''}
+                        {notificacion.semestre ? ` · ${notificacion.semestre}°` : ''}
+                      </span>
                       <span>{hace(notificacion.fecha)}</span>
                     </div>
-                    <a
-                      className="alerta__cita"
-                      href={notificacion.linkCita}
-                      target="_blank"
-                      rel="noreferrer"
-                      onClick={(evento) => evento.stopPropagation()}
-                    >
-                      <Icon name="calendar" size={13} /> Agendar cita
-                    </a>
+                    {notificacion.linkCita && (
+                      <a
+                        className="alerta__cita"
+                        href={notificacion.linkCita}
+                        target="_blank"
+                        rel="noreferrer"
+                        onClick={(evento) => evento.stopPropagation()}
+                      >
+                        <Icon name="calendar" size={13} /> Agendar cita
+                      </a>
+                    )}
                   </div>
                   {!notificacion.leida && <span className="alerta__no-leida" />}
                 </article>
