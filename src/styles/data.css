@@ -404,7 +404,7 @@
 }
 
 .grafica--reporte {
-  height: 292px;
+  height: 322px;
 }
 
 .celda-desercion {
@@ -435,4 +435,71 @@
   display: block;
   height: 100%;
   border-radius: inherit;
+}
+
+/* ---------- Filtros fijos por rol ---------- */
+
+.filtro-fijo {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 11px;
+  border: 1px solid #cfe5d9;
+  border-radius: 9px;
+  background: #eef7f1;
+  color: var(--primario);
+  font-size: 10.5px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+/* ---------- Cifras clicables de estadísticas ---------- */
+
+.cifra--clic {
+  width: 100%;
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.cifra--clic:hover {
+  border-color: #c3dcd2;
+  box-shadow: var(--sombra);
+  transform: translateY(-1px);
+}
+
+.cifra--clic:focus-visible {
+  outline: 2px solid var(--primario);
+  outline-offset: 2px;
+}
+
+/* Detalle por programa interactivo */
+.tabla__fila--clicable {
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.tabla__fila--clicable:hover,
+.tabla__fila--clicable:focus-visible {
+  background: #f2f8f5;
+  outline: none;
+}
+
+.celda-riesgo {
+  padding: 2px 5px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: transparent;
+  font: inherit;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+}
+
+.celda-riesgo:hover,
+.celda-riesgo:focus-visible {
+  border-color: currentColor;
+  background: #ffffff;
+  outline: none;
 }
