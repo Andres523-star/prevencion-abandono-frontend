@@ -1,0 +1,22 @@
+.ui-pill-filter-group {
+  display: inline-flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.ui-pill-filter-btn {
+  padding: 0.35rem 0.85rem;
+  border-radius: 9999px;
+  border: 1px solid #d1d5db;
+  background: white;
+  color: #4b5563;
+  font-size: 0.8125rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.ui-pill-filter-btn.selected {
+  background: #2563eb;
+  color: white;
+  border-color: #2563eb;
+}
