@@ -1,4 +1,4 @@
-import { MateriaAcademica } from '../types/academic';
+import type { MateriaAcademica } from "../types/academic";
 
 export const calculateWeightedAverage = (materias: MateriaAcademica[]): number => {
   let totalPuntos = 0;

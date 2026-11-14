@@ -1,4 +1,4 @@
-import { BalanceInasistencias } from '../types/attendance';
+import type { BalanceInasistencias } from "../types/attendance";
 
 export const calculateAttendanceBalance = (
   totalClases: number,

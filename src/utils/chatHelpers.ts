@@ -1,4 +1,4 @@
-import { MensajeChat } from '../types/chat';
+import type { MensajeChat } from "../types/chat";
 
 export const groupMessagesBySender = (messages: MensajeChat[]) => {
   return messages.reduce((acc, msg) => {

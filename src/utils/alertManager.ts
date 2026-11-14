@@ -1,4 +1,4 @@
-import { AlertaTemprana, NivelAlerta } from '../types/alerts';
+import type { AlertaTemprana, NivelAlerta } from "../types/alerts";
 
 export const filterAlertsByPriority = (
   alerts: AlertaTemprana[],

@@ -1,4 +1,4 @@
-import { ResumenRiesgoSede } from '../types/reports';
+import type { ResumenRiesgoSede } from "../types/reports";
 
 export const calculateNationalRetentionRate = (sedes: ResumenRiesgoSede[]): number => {
   if (sedes.length === 0) return 0;

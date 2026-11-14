@@ -1,4 +1,4 @@
-import { SugerenciaPreguntaIA } from '../types/iaAssistant';
+import type { SugerenciaPreguntaIA } from "../types/iaAssistant";
 
 export const PROMPTS_PREDETERMINADOS: SugerenciaPreguntaIA[] = [
   { id: '1', pregunta: '¿Cuáles estudiantes tienen riesgo crítico de inasistencia en Pasto?', categoria: 'RIESGO' },

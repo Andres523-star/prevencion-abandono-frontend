@@ -1,4 +1,4 @@
-import { MotivoFalta } from '../types/justifications';
+import type { MotivoFalta } from "../types/justifications";
 
 export const MOTIVOS_LABELS: Record<MotivoFalta, string> = {
   SALUD: 'Incapacidad médica',

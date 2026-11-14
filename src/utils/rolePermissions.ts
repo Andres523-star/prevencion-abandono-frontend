@@ -1,4 +1,4 @@
-import { RolUsuario, PermisosRol } from '../types/userRoles';
+import type { RolUsuario, PermisosRol } from "../types/userRoles";
 
 export const MATRIZ_PERMISOS: Record<RolUsuario, PermisosRol> = {
   ESTUDIANTE: { puedeVerNacional: false, puedeVerFacultadCompleta: false, puedeEditarEstudiantes: false, puedeExportarReportes: false, puedeAgendarCitas: true },

@@ -1,4 +1,4 @@
-import { DimensionRiesgo } from '../types/risk';
+import type { DimensionRiesgo } from "../types/risk";
 
 export const calculateWeightedRisk = (
   academico: number,
