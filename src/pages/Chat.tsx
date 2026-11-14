@@ -1,11 +1,13 @@
 import { useEffect, useMemo, useRef, useState, type ChangeEvent, type FormEvent } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
+import { useAuth } from '../auth/AuthContext'
 import { Icon } from '../components/Icon'
 import { useToast } from '../components/Toast'
 import { Avatar, Cargando, RiesgoBadge, Vacio } from '../components/Ui'
 import { chatApi, estudiantesApi, mensajeError } from '../services/api'
 import type { Conversacion, Estudiante, Mensaje } from '../types'
 import { hace, hora } from '../utils/format'
+import { ChatEstudiante } from './ChatEstudiante'
 
 const MAX_ARCHIVO = 5 * 1024 * 1024
 const SUGERENCIAS = ['¿Cómo estás?', 'Vi que faltaste a clase esta semana', '¿Podemos agendar una cita?']
@@ -44,6 +46,12 @@ function formatearSegundos(segundos: number): string {
 }
 
 export function Chat() {
+  const { sesion } = useAuth()
+  if (sesion?.rol === 'ESTUDIANTE') return <ChatEstudiante />
+  return <ChatInstitucional />
+}
+
+function ChatInstitucional() {
   const { id } = useParams()
   const navigate = useNavigate()
   const { mostrarToast } = useToast()

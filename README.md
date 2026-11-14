@@ -2,26 +2,30 @@
 
 Frontend de la demo de **Permanencia**, la plataforma de acompañamiento universitario para
 prevenir el abandono. Está construido con React 19, TypeScript, Vite, React Router y Recharts,
-y consume el backend de demostración (`demo-backend`) que guarda 600 estudiantes de prueba en
-memoria.
+y consume el backend de demostración (`demo-backend`) que simula **1.109.845 estudiantes** de
+las 17 sedes en memoria.
 
 > Datos ficticios para presentaciones académicas. La autenticación es simplificada.
 
 ## Cuentas de la demo
 
-| Cuenta                | Correo                             | Contraseña        |
-| --------------------- | ---------------------------------- | ----------------- |
-| Andrés Felipe (tú)    | `facb129@gmail.com`                | `Permanencia2026` |
-| Docente (Esteban)     | `esteban@universidad.edu.co`       | `demo123`         |
-| Coordinación (Camila) | `coordinacion@universidad.edu.co`  | `demo123`         |
+| Rol                  | Correo                       | Contraseña       | Sede por defecto |
+| -------------------- | ---------------------------- | ---------------- | ---------------- |
+| Estudiante           | `estudiante@ucc.edu.co`       | `Estudiante2026` | Pasto            |
+| Profesor             | `profesor@ucc.edu.co`         | `Profesor2026`   | Bogotá           |
+| Jefe de programa     | `jefe.programa@ucc.edu.co`    | `Programa2026`   | Medellín         |
+| Coordinador de sede  | `coordinador.sede@ucc.edu.co` | `Coordinador2026`| Bogotá           |
+| Decano               | `decano@ucc.edu.co`           | `Decano2026`     | Pasto (facultad completa) |
+| Rector               | `rector@ucc.edu.co`           | `Rector2026`     | Nacional         |
 
 ## Cómo correr la demo
 
 1. **Backend** (puerto 8080, sin base de datos):
 
    ```bash
-   cd ../demo-backend
-   sh mvnw spring-boot:run
+   # Clona el repo del backend y entra a la carpeta de la demo
+   cd ../prevencion-abandono-backend/demo-backend
+   ./mvnw spring-boot:run
    ```
 
 2. **Frontend** (puerto 5173):
@@ -47,7 +51,9 @@ Abrir `http://localhost:5173` e iniciar sesión.
 - **Acompañamiento (chat)**: conversaciones con texto, notas de voz, PDF y Word; el estudiante
   responde automáticamente unos segundos después.
 - **Campanita de alertas**: notificaciones de riesgo alto con enlace para agendar cita.
-- **Menú de usuario**: en la esquina superior, con la opción de cerrar sesión.
+- **Asistente de IA**: botón flotante con escalas de tamaño, preguntas rápidas por rol y
+  respuestas sobre riesgo, materias, faltas y próximas citas.
+- **Menú de usuario**: cierre de sesión con doble confirmación.
 
 ## Configuración
 
