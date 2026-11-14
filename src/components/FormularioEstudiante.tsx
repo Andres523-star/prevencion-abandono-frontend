@@ -21,6 +21,7 @@ export function FormularioEstudiante({ abierto, onCerrar, onCreado }: Formulario
   const [telefono, setTelefono] = useState('')
   const [carrera, setCarrera] = useState<string>(CARRERAS[0])
   const [semestre, setSemestre] = useState(1)
+  const [grupo, setGrupo] = useState('A')
   const [categoria, setCategoria] = useState<string>(CATEGORIAS[0])
   const [razon, setRazon] = useState('')
   const [promedio, setPromedio] = useState('3.5')
@@ -37,6 +38,7 @@ export function FormularioEstudiante({ abierto, onCerrar, onCreado }: Formulario
     setTelefono('')
     setCarrera(CARRERAS[0])
     setSemestre(1)
+    setGrupo('A')
     setCategoria(CATEGORIAS[0])
     setRazon('')
     setPromedio('3.5')
@@ -67,6 +69,7 @@ export function FormularioEstudiante({ abierto, onCerrar, onCreado }: Formulario
         cedula: cedula.trim(),
         carrera,
         semestre,
+        grupo,
         email: email.trim(),
         telefono: telefono.trim(),
         categoria,
@@ -193,6 +196,15 @@ export function FormularioEstudiante({ abierto, onCerrar, onCreado }: Formulario
                     {opcion}°
                   </option>
                 ))}
+              </select>
+            </div>
+          </label>
+          <label className="campo">
+            <span>Grupo *</span>
+            <div className="campo__control">
+              <select value={grupo} onChange={(evento) => setGrupo(evento.target.value)} required>
+                <option value="A">Grupo A</option>
+                <option value="B">Grupo B</option>
               </select>
             </div>
           </label>

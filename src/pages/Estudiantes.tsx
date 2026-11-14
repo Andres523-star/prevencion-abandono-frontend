@@ -3,7 +3,8 @@ import { Link, useSearchParams } from 'react-router-dom'
 import { FormularioEstudiante } from '../components/FormularioEstudiante'
 import { Icon } from '../components/Icon'
 import { Avatar, Cargando, EstadoBadge, RiesgoBadge, Vacio } from '../components/Ui'
-import { estudiantesApi, mensajeError } from '../services/api'
+import { estudiantesApi, descargasApi, mensajeError } from '../services/api'
+import { useToast } from '../components/Toast'
 import type { Estudiante } from '../types'
 import {
   CARRERAS,
@@ -18,9 +19,11 @@ const POR_PAGINA = 10
 
 export function Estudiantes() {
   const [searchParams] = useSearchParams()
+  const { mostrarToast } = useToast()
   const [search, setSearch] = useState(() => searchParams.get('search') ?? '')
   const [carrera, setCarrera] = useState(() => searchParams.get('carrera') ?? '')
   const [semestre, setSemestre] = useState(() => searchParams.get('semestre') ?? '')
+  const [grupo, setGrupo] = useState(() => searchParams.get('grupo') ?? '')
   const [categoria, setCategoria] = useState(() => searchParams.get('categoria') ?? '')
   const [riesgo, setRiesgo] = useState(() => searchParams.get('riesgo') ?? '')
   const [estudiantes, setEstudiantes] = useState<Estudiante[]>([])
@@ -37,6 +40,7 @@ export function Estudiantes() {
     setSearch(params.get('search') ?? '')
     setCarrera(params.get('carrera') ?? '')
     setSemestre(params.get('semestre') ?? '')
+    setGrupo(params.get('grupo') ?? '')
     setCategoria(params.get('categoria') ?? '')
     setRiesgo(params.get('riesgo') ?? '')
   }, [paramsString])
@@ -52,8 +56,10 @@ export function Estudiantes() {
             search: search.trim() || undefined,
             carrera: carrera || undefined,
             semestre: semestre ? Number(semestre) : undefined,
+            grupo: grupo || undefined,
             categoria: categoria || undefined,
             riesgo: riesgo ? (riesgo as Estudiante['riesgoActual']) : undefined,
+            limit: 1000,
           })
           if (activo) {
             setEstudiantes(datos)
@@ -71,7 +77,7 @@ export function Estudiantes() {
       activo = false
       window.clearTimeout(temporizador)
     }
-  }, [search, carrera, semestre, categoria, riesgo, refresco])
+  }, [search, carrera, semestre, grupo, categoria, riesgo, refresco])
 
   const totalPaginas = Math.max(1, Math.ceil(estudiantes.length / POR_PAGINA))
   const paginaActual = Math.min(pagina, totalPaginas)
@@ -80,12 +86,13 @@ export function Estudiantes() {
     [estudiantes, paginaActual],
   )
 
-  const filtrosActivos = Boolean(search || carrera || semestre || categoria || riesgo)
+  const filtrosActivos = Boolean(search || carrera || semestre || grupo || categoria || riesgo)
 
   const limpiarFiltros = () => {
     setSearch('')
     setCarrera('')
     setSemestre('')
+    setGrupo('')
     setCategoria('')
     setRiesgo('')
     setPagina(1)
@@ -95,14 +102,53 @@ export function Estudiantes() {
     setRefresco((valor) => valor + 1)
   }
 
+  const descargarLista = async () => {
+    try {
+      await descargasApi.estudiantes({
+        search: search.trim() || undefined,
+        carrera: carrera || undefined,
+        semestre: semestre ? Number(semestre) : undefined,
+        grupo: grupo || undefined,
+        categoria: categoria || undefined,
+        riesgo: riesgo ? (riesgo as Estudiante['riesgoActual']) : undefined,
+      })
+      mostrarToast('Descargamos el listado filtrado en CSV.')
+    } catch (err) {
+      mostrarToast(mensajeError(err), 'error')
+    }
+  }
+
+  const descargarTodo = async () => {
+    try {
+      await descargasApi.todo({
+        carrera: carrera || undefined,
+        semestre: semestre ? Number(semestre) : undefined,
+        grupo: grupo || undefined,
+      })
+      mostrarToast('Descargamos el ZIP con estudiantes, notas, faltas y fichas.')
+    } catch (err) {
+      mostrarToast(mensajeError(err), 'error')
+    }
+  }
+
   return (
     <div className="pagina">
       <section className="pagina__cabecera">
         <div>
           <h2>Estudiantes acompañados</h2>
-          <p>Filtra por programa, semestre, causa o nivel de riesgo para decidir por dónde empezar.</p>
+          <p>
+            Filtra por programa, semestre, causa o nivel de riesgo para decidir por dónde empezar.
+            La tabla muestra los 1.000 casos de mayor riesgo; usa el CSV o el ZIP para el detalle
+            completo de tu alcance.
+          </p>
         </div>
         <div className="pagina__acciones">
+          <button type="button" className="boton boton--secundario" onClick={() => void descargarLista()}>
+            <Icon name="download" size={17} /> Descargar CSV
+          </button>
+          <button type="button" className="boton boton--secundario" onClick={() => void descargarTodo()}>
+            <Icon name="download" size={17} /> Descargar todo (.zip)
+          </button>
           <button type="button" className="boton boton--primario" onClick={() => setModalAbierto(true)}>
             <Icon name="plus" size={17} /> Nuevo estudiante
           </button>
@@ -153,6 +199,16 @@ export function Estudiantes() {
           </label>
 
           <label className="filtro-select">
+            <Icon name="users" size={16} />
+            <select value={grupo} onChange={(evento) => setGrupo(evento.target.value)} aria-label="Grupo">
+              <option value="">Todos los grupos</option>
+              <option value="A">Grupo A</option>
+              <option value="B">Grupo B</option>
+            </select>
+            <Icon name="chevronDown" size={14} />
+          </label>
+
+          <label className="filtro-select">
             <Icon name="heart" size={16} />
             <select value={categoria} onChange={(evento) => setCategoria(evento.target.value)} aria-label="Causa">
               <option value="">Todas las causas</option>
@@ -191,7 +247,9 @@ export function Estudiantes() {
           <div>
             <h3>Directorio de estudiantes</h3>
             <p>
-              {cargando ? 'Buscando…' : `${estudiantes.length.toLocaleString('es-CO')} estudiantes encontrados`}
+              {cargando
+                ? 'Buscando…'
+                : `${estudiantes.length.toLocaleString('es-CO')} fichas priorizadas por riesgo`}
             </p>
           </div>
           <span className="panel__etiqueta">Ordenados por riesgo</span>
@@ -223,6 +281,7 @@ export function Estudiantes() {
                   <tr>
                     <th>Estudiante</th>
                     <th>Programa</th>
+                    <th>Grupo</th>
                     <th>Causa principal</th>
                     <th className="tabla__numero">Promedio</th>
                     <th className="tabla__numero">Faltas</th>
@@ -253,6 +312,9 @@ export function Estudiantes() {
                           <strong>{estudiante.carrera}</strong>
                           <small>{estudiante.semestre}° semestre</small>
                         </span>
+                      </td>
+                      <td>
+                        <span className="chip-grupo">Grupo {estudiante.grupo}</span>
                       </td>
                       <td>
                         <span className="chip-causa">

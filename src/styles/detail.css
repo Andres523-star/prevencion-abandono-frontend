@@ -558,3 +558,148 @@
   color: #b4c2ba;
   flex-shrink: 0;
 }
+
+/* ---------- Historial de acompañamiento ---------- */
+
+.historial {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 4px 2px 2px;
+}
+
+.historial__item {
+  position: relative;
+  display: flex;
+  gap: 12px;
+  padding: 10px 0 10px 4px;
+}
+
+.historial__item:not(:last-child)::before {
+  content: '';
+  position: absolute;
+  left: 10px;
+  top: 30px;
+  bottom: -4px;
+  width: 2px;
+  background: #edf1ec;
+}
+
+.historial__punto {
+  position: relative;
+  z-index: 1;
+  flex-shrink: 0;
+  width: 13px;
+  height: 13px;
+  margin-top: 3px;
+  border: 3px solid #ffffff;
+  border-radius: 50%;
+  background: var(--primario);
+  box-shadow: 0 0 0 1px #dbe7e0;
+}
+
+.historial__item--cumplido .historial__punto {
+  background: var(--verde);
+}
+
+.historial__item--no_asistio .historial__punto {
+  background: #c0392b;
+}
+
+.historial__item--pendiente .historial__punto {
+  background: #d9a520;
+}
+
+.historial__contenido {
+  flex: 1;
+  min-width: 0;
+  padding-bottom: 4px;
+}
+
+.historial__fila {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.historial__fila strong {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--tinta);
+}
+
+.historial__fila span {
+  flex-shrink: 0;
+  color: var(--tinta-tenue);
+  font-size: 8.5px;
+}
+
+.historial__contenido p {
+  margin: 2px 0 1px;
+  color: var(--tinta-suave);
+  font-size: 9.5px;
+  line-height: 1.5;
+}
+
+.historial__contenido small {
+  color: var(--tinta-tenue);
+  font-size: 8.5px;
+  font-weight: 600;
+}
+
+.historial__acciones {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 7px;
+}
+
+.historial__toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 9px;
+  border: 1px solid var(--borde-fuerte);
+  border-radius: 100px;
+  background: #ffffff;
+  color: var(--tinta-suave);
+  font-size: 8.8px;
+  font-weight: 700;
+  transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
+}
+
+.historial__toggle:hover {
+  border-color: #c3dcd2;
+  background: #f6faf6;
+}
+
+.historial__toggle--activo-ok {
+  border-color: #bfe3cf;
+  background: #e8f6ee;
+  color: #1d6b47;
+}
+
+.historial__toggle--activo-no {
+  border-color: #f0c7c1;
+  background: #fdf1ee;
+  color: #a33a2a;
+}
+
+.historial__toggle:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.historial__pendiente {
+  color: #a37c12;
+  font-size: 8.8px;
+  font-weight: 700;
+}
+
+.historial__vacio {
+  margin: 0;
+  padding: 8px 2px 12px;
+  color: var(--tinta-tenue);
+  font-size: 10px;
+}

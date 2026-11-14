@@ -12,8 +12,8 @@ import {
 import { Icon } from '../components/Icon'
 import { useToast } from '../components/Toast'
 import { Avatar, BarraProgreso, Cargando, EstadoBadge, RiesgoBadge, Vacio } from '../components/Ui'
-import { analisisApi, estudiantesApi, mensajeError } from '../services/api'
-import type { Analisis, Estudiante } from '../types'
+import { analisisApi, acompanamientoApi, descargasApi, estudiantesApi, mensajeError } from '../services/api'
+import type { AccionAcompanamiento, Analisis, Estudiante } from '../types'
 import {
   COLOR_CATEGORIA,
   COLOR_RIESGO,
@@ -68,6 +68,9 @@ export function DetalleEstudiante() {
   const [analisis, setAnalisis] = useState<Analisis | null>(null)
   const [analizando, setAnalizando] = useState(false)
   const [errorAnalisis, setErrorAnalisis] = useState('')
+  const [acciones, setAcciones] = useState<AccionAcompanamiento[]>([])
+  const [errorHistorial, setErrorHistorial] = useState('')
+  const [guardandoAccion, setGuardandoAccion] = useState<number | null>(null)
 
   useEffect(() => {
     let activo = true
@@ -94,6 +97,43 @@ export function DetalleEstudiante() {
     }
   }, [estudianteId])
 
+  useEffect(() => {
+    let activo = true
+    if (!Number.isFinite(estudianteId)) return undefined
+    acompanamientoApi
+      .listar(estudianteId)
+      .then((datos) => {
+        if (activo) setAcciones(datos)
+      })
+      .catch((err) => {
+        if (activo) setErrorHistorial(mensajeError(err))
+      })
+    return () => {
+      activo = false
+    }
+  }, [estudianteId])
+
+  const cambiarEstado = async (
+    accion: AccionAcompanamiento,
+    estado: AccionAcompanamiento['estado'],
+  ) => {
+    setGuardandoAccion(accion.id)
+    try {
+      const actualizada = await acompanamientoApi.actualizar(estudianteId, accion.id, estado)
+      setAcciones((actuales) =>
+        actuales.map((item) => (item.id === actualizada.id ? actualizada : item)),
+      )
+      mostrarToast(
+        estado === 'CUMPLIDO' ? 'Acción marcada como cumplida.' : 'Acción marcada como no asistió.',
+        estado === 'CUMPLIDO' ? 'exito' : 'info',
+      )
+    } catch (err) {
+      mostrarToast(mensajeError(err), 'error')
+    } finally {
+      setGuardandoAccion(null)
+    }
+  }
+
   const generarAnalisis = async () => {
     if (!estudiante) return
     setAnalizando(true)
@@ -109,12 +149,30 @@ export function DetalleEstudiante() {
     }
   }
 
+  const descargar = async (tipo: 'html' | 'csv' | 'zip') => {
+    if (!estudiante) return
+    try {
+      if (tipo === 'html') await descargasApi.fichaHtml(estudiante.id)
+      else if (tipo === 'csv') await descargasApi.fichaCsv(estudiante.id)
+      else
+        await descargasApi.todo({
+          carrera: estudiante.carrera,
+          sede: estudiante.sede,
+          semestre: estudiante.semestre,
+          grupo: estudiante.grupo,
+        })
+      mostrarToast('La descarga está lista.')
+    } catch (err) {
+      mostrarToast(mensajeError(err), 'error')
+    }
+  }
+
   if (cargando) return <Cargando texto="Cargando la ficha del estudiante…" />
 
   if (error || !estudiante) {
     return (
       <Vacio icono="alert" titulo="No pudimos abrir esta ficha" texto={error}>
-        <Link to="/estudiantes" className="boton boton--primario">
+        <Link to="/" className="boton boton--primario">
           <Icon name="arrowLeft" size={16} /> Volver a estudiantes
         </Link>
       </Vacio>
@@ -132,7 +190,7 @@ export function DetalleEstudiante() {
 
   return (
     <div className="pagina pagina--detalle">
-      <Link to="/estudiantes" className="volver">
+      <Link to="/" className="volver">
         <Icon name="arrowLeft" size={16} /> Volver al directorio
       </Link>
 
@@ -154,7 +212,8 @@ export function DetalleEstudiante() {
             </div>
             <h2>{nombreCompleto(estudiante)}</h2>
             <p>
-              {estudiante.carrera} · {estudiante.semestre}° semestre · Ingreso {fechaCorta(estudiante.fechaIngreso)}
+              {estudiante.carrera} · {estudiante.semestre}° semestre · Grupo {estudiante.grupo} ·{' '}
+              {estudiante.sede} · {estudiante.facultad} · Ingreso {fechaCorta(estudiante.fechaIngreso)}
             </p>
             <div className="ficha-hero__acciones">
               <Link to={`/chat/${estudiante.id}`} className="boton boton--primario">
@@ -166,6 +225,15 @@ export function DetalleEstudiante() {
               <a href={`mailto:${estudiante.email}`} className="boton boton--secundario">
                 <Icon name="mail" size={17} /> Escribir correo
               </a>
+              <button type="button" className="boton boton--secundario" onClick={() => void descargar('html')}>
+                <Icon name="download" size={17} /> Descargar ficha
+              </button>
+              <button type="button" className="boton boton--secundario" onClick={() => void descargar('csv')}>
+                <Icon name="download" size={17} /> Descargar CSV
+              </button>
+              <button type="button" className="boton boton--secundario" onClick={() => void descargar('zip')}>
+                <Icon name="download" size={17} /> Descargar su grupo (.zip)
+              </button>
             </div>
           </div>
         </div>
@@ -225,7 +293,12 @@ export function DetalleEstudiante() {
               {estudiante.materias.map((materia) => (
                 <div key={materia.nombre} className="materia">
                   <div className="materia__fila">
-                    <span>{materia.nombre}</span>
+                    <span>
+                      {materia.nombre}
+                      {materia.homologada && (
+                        <span className="chip-causa chip-causa--suave chip-causa--mini">Homologada</span>
+                      )}
+                    </span>
                     <strong style={{ color: colorNota(materia.nota) }}>{materia.nota.toFixed(1)}</strong>
                   </div>
                   <BarraProgreso
@@ -233,6 +306,10 @@ export function DetalleEstudiante() {
                     color={colorNota(materia.nota)}
                     etiqueta={`Nota de ${materia.nombre}: ${materia.nota}`}
                   />
+                  <small className="materia__detalle">
+                    {materia.semestre}.º · Grupo {materia.grupo} · {materia.faltas} faltas ·{' '}
+                    {materia.faltasJustificadas} justificadas
+                  </small>
                 </div>
               ))}
               <div className="materias__pie">
@@ -282,6 +359,72 @@ export function DetalleEstudiante() {
                   />
                 </AreaChart>
               </ResponsiveContainer>
+            </div>
+          </article>
+
+          <article className="panel">
+            <header className="panel__cabecera">
+              <div>
+                <h3>Historial de acompañamiento</h3>
+                <p>La historia de las acciones realizadas con este estudiante.</p>
+              </div>
+              <span className="panel__etiqueta">
+                {acciones.filter((accion) => accion.estado === 'CUMPLIDO').length} cumplidas
+              </span>
+            </header>
+
+            {errorHistorial && (
+              <p className="mensaje-error" role="alert">
+                <Icon name="alert" size={16} /> {errorHistorial}
+              </p>
+            )}
+
+            {!errorHistorial && acciones.length === 0 && (
+              <p className="historial__vacio">Aún no hay acciones registradas.</p>
+            )}
+
+            <div className="historial">
+              {acciones.map((accion) => (
+                <div
+                  key={accion.id}
+                  className={`historial__item historial__item--${accion.estado.toLowerCase()}`}
+                >
+                  <span className="historial__punto" aria-hidden="true" />
+                  <div className="historial__contenido">
+                    <div className="historial__fila">
+                      <strong>{accion.titulo}</strong>
+                      <span>{fechaCorta(accion.fecha)}</span>
+                    </div>
+                    <p>{accion.descripcion}</p>
+                    <small>{accion.responsable}</small>
+                    <div className="historial__acciones">
+                      <button
+                        type="button"
+                        className={`historial__toggle${
+                          accion.estado === 'CUMPLIDO' ? ' historial__toggle--activo-ok' : ''
+                        }`}
+                        onClick={() => void cambiarEstado(accion, 'CUMPLIDO')}
+                        disabled={guardandoAccion === accion.id}
+                      >
+                        <Icon name="check" size={14} /> Cumplido
+                      </button>
+                      <button
+                        type="button"
+                        className={`historial__toggle${
+                          accion.estado === 'NO_ASISTIO' ? ' historial__toggle--activo-no' : ''
+                        }`}
+                        onClick={() => void cambiarEstado(accion, 'NO_ASISTIO')}
+                        disabled={guardandoAccion === accion.id}
+                      >
+                        <Icon name="close" size={14} /> No asistió
+                      </button>
+                      {accion.estado === 'PENDIENTE' && (
+                        <span className="historial__pendiente">Pendiente</span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           </article>
         </div>
