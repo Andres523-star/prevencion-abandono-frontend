@@ -53,7 +53,7 @@ export function Login() {
   const navigate = useNavigate()
   const location = useLocation()
   const [rol, setRol] = useState<Rol>('ESTUDIANTE')
-  const [sede, setSede] = useState('Bogotá')
+  const [sede, setSede] = useState(CUENTAS_DEMO[0].sede ?? 'Nacional')
   const [email, setEmail] = useState(CUENTAS_DEMO[0].email)
   const [password, setPassword] = useState(CUENTAS_DEMO[0].password)
   const [verPassword, setVerPassword] = useState(false)
@@ -141,10 +141,10 @@ export function Login() {
                 </div>
                 <small className="campo__ayuda">
                   {rol === 'DECANO'
-                    ? 'El decano conserva la facultad completa en todas las sedes; la sede es solo referencial.'
+                    ? 'El correo del decano está registrado en Pasto. El alcance de la facultad sigue siendo nacional.'
                     : rol === 'ESTUDIANTE'
-                      ? 'Tu cuenta está asociada a una sede; aquí puedes confirmarla.'
-                      : 'La sede ajusta el alcance de los datos que verás.'}
+                      ? 'Tu cuenta está registrada en esta sede; si eliges otra, el ingreso se rechaza.'
+                      : 'El correo está registrado en una sede; debe coincidir con la seleccionada.'}
                 </small>
               </label>
             )}
@@ -229,8 +229,9 @@ export function Login() {
               ))}
             </div>
             <p className="cuentas-demo__nota">
-              Elige un cargo y el correo y la contraseña se completan solos. También puedes
-              escribirlos a mano.
+              Elige un cargo y el correo, la sede y la contraseña se completan solos. Cada correo
+              pertenece a una sede: si la cambias, el ingreso se rechaza. Solo el Rector puede
+              entrar desde cualquier sede.
             </p>
           </div>
 
