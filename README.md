@@ -57,11 +57,21 @@ Abrir `http://localhost:5173` e iniciar sesión.
 
 ## Configuración
 
-La URL del backend se define en `.env`:
+La URL del backend se define con `VITE_API_URL`. Copia `.env.example` a `.env` (el `.env` ya no
+se sube al repositorio) y ajusta la URL; en Vercel, define la variable en *Project Settings →
+Environment Variables*:
 
 ```
 VITE_API_URL=http://localhost:8080/api
 ```
+
+## Seguridad en el cliente
+
+- La sesión se guarda en `sessionStorage` (se borra al cerrar la pestaña), no en `localStorage`.
+- "Cerrar sesión" revoca el token en el backend (`POST /api/auth/logout`).
+- El registro público solo crea cuentas de profesor, con sede y programa.
+- Los adjuntos del chat se descargan con el enlace firmado que entrega el backend; se aceptan PDF,
+  Word `.docx` y audio (no `.doc` ni Word con macros).
 
 ## Scripts
 
