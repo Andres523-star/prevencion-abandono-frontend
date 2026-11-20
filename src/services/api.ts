@@ -20,6 +20,7 @@ import type {
   RespuestaIA,
   Sesion,
 } from '../types'
+import { borrarSesion, tokenActual } from '../auth/almacenSesion'
 
 /** URL del backend del demo. Se puede cambiar con VITE_API_URL. */
 export const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080/api'
@@ -27,15 +28,8 @@ export const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080/ap
 const api = axios.create({ baseURL: API_URL, timeout: 30_000 })
 
 api.interceptors.request.use((config) => {
-  const guardada = localStorage.getItem('permanencia.sesion')
-  if (guardada) {
-    try {
-      const sesion = JSON.parse(guardada) as Sesion
-      if (sesion.token) config.headers.Authorization = `Bearer ${sesion.token}`
-    } catch {
-      localStorage.removeItem('permanencia.sesion')
-    }
-  }
+  const token = tokenActual()
+  if (token) config.headers.Authorization = `Bearer ${token}`
   return config
 })
 
@@ -43,7 +37,7 @@ api.interceptors.response.use(
   (respuesta) => respuesta,
   (error: AxiosError) => {
     if (error.response?.status === 401) {
-      localStorage.removeItem('permanencia.sesion')
+      borrarSesion()
       window.dispatchEvent(new Event('permanencia:sesion-expirada'))
     }
     return Promise.reject(error)
@@ -67,16 +61,29 @@ export const authApi = {
     const { data } = await api.post<Sesion>('/auth/login', { email, password, rol, sede })
     return data
   },
-  async registrar(datos: {
-    nombre: string
-    apellido: string
-    email: string
-    password: string
-    rol: string
-  }): Promise<Sesion> {
+  async registrar(datos: DatosRegistro): Promise<Sesion> {
     const { data } = await api.post<Sesion>('/auth/register', datos)
     return data
   },
+  /** Sedes y, para cada una, los programas que se dictan (público: se usa antes de tener cuenta). */
+  async opcionesRegistro(): Promise<Record<string, string[]>> {
+    const { data } = await api.get<Record<string, string[]>>('/auth/opciones-registro')
+    return data
+  },
+  /** Revoca el token en el servidor. */
+  async logout(): Promise<void> {
+    await api.post('/auth/logout')
+  },
+}
+
+/** El registro público solo crea profesores, atados a una sede y un programa. */
+export interface DatosRegistro {
+  nombre: string
+  apellido: string
+  email: string
+  password: string
+  sede: string
+  programa: string
 }
 
 export const estudiantesApi = {
@@ -136,8 +143,13 @@ export const chatApi = {
     const { data } = await api.post<Mensaje>(`/chats/${estudianteId}/mensajes`, mensaje)
     return data
   },
-  archivoUrl(archivoId: string): string {
-    return `${API_URL}/chats/adjuntos/${archivoId}`
+  /**
+   * Enlace de descarga de un adjunto. Lleva la firma con vencimiento que el backend entrega con
+   * cada mensaje: sin ella la descarga responde 403.
+   */
+  archivoUrl(mensaje: Pick<Mensaje, 'archivoId' | 'archivoFirma'>): string {
+    const firma = mensaje.archivoFirma ? `?firma=${encodeURIComponent(mensaje.archivoFirma)}` : ''
+    return `${API_URL}/chats/adjuntos/${encodeURIComponent(mensaje.archivoId ?? '')}${firma}`
   },
 }
 

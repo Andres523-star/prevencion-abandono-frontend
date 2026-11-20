@@ -1,33 +1,16 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
-import { authApi } from '../services/api'
+import { authApi, type DatosRegistro } from '../services/api'
 import type { Sesion } from '../types'
-
-const CLAVE_SESION = 'permanencia.sesion'
+import { borrarSesion, guardarSesion, leerSesion } from './almacenSesion'
 
 interface AuthContexto {
   sesion: Sesion | null
   iniciarSesion: (email: string, password: string, rol?: string, sede?: string | null) => Promise<void>
-  registrarse: (datos: {
-    nombre: string
-    apellido: string
-    email: string
-    password: string
-    rol: string
-  }) => Promise<void>
+  registrarse: (datos: DatosRegistro) => Promise<void>
   cerrarSesion: () => void
 }
 
 const AuthContext = createContext<AuthContexto | null>(null)
-
-function leerSesion(): Sesion | null {
-  try {
-    const guardada = localStorage.getItem(CLAVE_SESION)
-    return guardada ? (JSON.parse(guardada) as Sesion) : null
-  } catch {
-    localStorage.removeItem(CLAVE_SESION)
-    return null
-  }
-}
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [sesion, setSesion] = useState<Sesion | null>(leerSesion)
@@ -45,21 +28,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     sede?: string | null,
   ) => {
     const nueva = await authApi.login(email, password, rol, sede)
-    localStorage.setItem(CLAVE_SESION, JSON.stringify(nueva))
+    guardarSesion(nueva)
     setSesion(nueva)
   }, [])
 
-  const registrarse = useCallback(
-    async (datos: { nombre: string; apellido: string; email: string; password: string; rol: string }) => {
-      const nueva = await authApi.registrar(datos)
-      localStorage.setItem(CLAVE_SESION, JSON.stringify(nueva))
-      setSesion(nueva)
-    },
-    [],
-  )
+  const registrarse = useCallback(async (datos: DatosRegistro) => {
+    const nueva = await authApi.registrar(datos)
+    guardarSesion(nueva)
+    setSesion(nueva)
+  }, [])
 
   const cerrarSesion = useCallback(() => {
-    localStorage.removeItem(CLAVE_SESION)
+    // Revoca el token en el servidor; si falla (sin red), igual se borra en el navegador.
+    // La petición sale antes de borrar la sesión para que lleve el token.
+    void authApi.logout().catch(() => undefined)
+    borrarSesion()
     setSesion(null)
   }, [])
 
