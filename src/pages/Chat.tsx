@@ -227,13 +227,11 @@ function ChatInstitucional() {
       return
     }
     const extension = archivo.name.split('.').pop()?.toLowerCase() ?? ''
-    const permitido =
-      archivo.type.startsWith('audio/') ||
-      archivo.type === 'application/pdf' ||
-      archivo.type.includes('word') ||
-      ['pdf', 'doc', 'docx', 'mp3', 'm4a', 'ogg', 'webm', 'wav'].includes(extension)
+    // El backend valida el contenido real; aquí solo se evita subir algo que va a rechazar.
+    // Word antiguo (.doc) y con macros (.docm) no se aceptan: son la vía típica de malware.
+    const permitido = ['pdf', 'docx', 'mp3', 'm4a', 'ogg', 'oga', 'opus', 'webm', 'wav'].includes(extension)
     if (!permitido) {
-      mostrarToast('Solo se permiten PDF, Word o archivos de audio.', 'error')
+      mostrarToast('Solo se permiten PDF, Word (.docx) o archivos de audio.', 'error')
       return
     }
     try {
@@ -484,9 +482,9 @@ function ChatInstitucional() {
                               esAudio ? (
                                 <div className="archivo-audio">
                                   <span className="archivo-audio__icono"><Icon name="mic" size={18} /></span>
-                                  <audio controls preload="none" src={chatApi.archivoUrl(mensaje.archivoId)} />
+                                  <audio controls preload="none" src={chatApi.archivoUrl(mensaje)} />
                                   <a
-                                    href={chatApi.archivoUrl(mensaje.archivoId)}
+                                    href={chatApi.archivoUrl(mensaje)}
                                     download={mensaje.nombreArchivo ?? undefined}
                                     className="archivo-audio__descarga"
                                     aria-label="Descargar nota de voz"
@@ -496,7 +494,7 @@ function ChatInstitucional() {
                                 </div>
                               ) : (
                                 <a
-                                  href={chatApi.archivoUrl(mensaje.archivoId)}
+                                  href={chatApi.archivoUrl(mensaje)}
                                   target="_blank"
                                   rel="noreferrer"
                                   className="archivo-adjunto"
@@ -571,7 +569,7 @@ function ChatInstitucional() {
                   <input
                     ref={inputArchivo}
                     type="file"
-                    accept=".pdf,.doc,.docx,audio/*"
+                    accept=".pdf,.docx,audio/*"
                     onChange={(evento) => void seleccionarArchivo(evento)}
                     hidden
                   />

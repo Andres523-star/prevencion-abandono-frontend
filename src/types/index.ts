@@ -232,6 +232,8 @@ export interface Mensaje {
   nombreArchivo: string | null
   mime: string | null
   archivoId: string | null
+  /** Firma con vencimiento para descargar el adjunto (la entrega el backend con cada mensaje). */
+  archivoFirma?: string | null
   fecha: string
   timestamp: number
   leido: boolean

@@ -1,9 +1,9 @@
-import { useState, type FormEvent } from 'react'
+import { useEffect, useState, type FormEvent } from 'react'
 import { Link, Navigate, useNavigate } from 'react-router-dom'
 import { useAuth } from '../auth/AuthContext'
 import { AuthAside } from '../components/AuthAside'
 import { Icon } from '../components/Icon'
-import { mensajeError } from '../services/api'
+import { authApi, mensajeError } from '../services/api'
 
 export function Register() {
   const { sesion, registrarse } = useAuth()
@@ -13,12 +13,34 @@ export function Register() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmacion, setConfirmacion] = useState('')
-  const [rol, setRol] = useState<'PROFESOR' | 'COORDINADOR_SEDE'>('PROFESOR')
+  // El registro público solo crea profesores, atados a una sede y un programa del catálogo:
+  // así una cuenta nueva no puede ver estudiantes de otras sedes o programas.
+  const [opciones, setOpciones] = useState<Record<string, string[]>>({})
+  const [sede, setSede] = useState('')
+  const [programa, setPrograma] = useState('')
   const [verPassword, setVerPassword] = useState(false)
   const [cargando, setCargando] = useState(false)
   const [error, setError] = useState('')
 
+  useEffect(() => {
+    let activo = true
+    authApi
+      .opcionesRegistro()
+      .then((datos) => {
+        if (activo) setOpciones(datos)
+      })
+      .catch((err: unknown) => {
+        if (activo) setError(mensajeError(err))
+      })
+    return () => {
+      activo = false
+    }
+  }, [])
+
   if (sesion) return <Navigate to="/" replace />
+
+  const sedes = Object.keys(opciones)
+  const programas = sede ? (opciones[sede] ?? []) : []
 
   const enviar = async (evento: FormEvent) => {
     evento.preventDefault()
@@ -27,13 +49,24 @@ export function Register() {
       setError('Las contraseñas no coinciden.')
       return
     }
-    if (password.length < 6 || !/\d/.test(password)) {
-      setError('La contraseña debe tener al menos 6 caracteres y un número.')
+    if (password.length < 8 || !/\d/.test(password) || !/\p{L}/u.test(password)) {
+      setError('La contraseña debe tener al menos 8 caracteres, con letras y números.')
+      return
+    }
+    if (!sede || !programa) {
+      setError('Selecciona la sede y el programa en los que dictas clase.')
       return
     }
     setCargando(true)
     try {
-      await registrarse({ nombre: nombre.trim(), apellido: apellido.trim(), email: email.trim(), password, rol })
+      await registrarse({
+        nombre: nombre.trim(),
+        apellido: apellido.trim(),
+        email: email.trim(),
+        password,
+        sede,
+        programa,
+      })
       navigate('/', { replace: true })
     } catch (err) {
       setError(mensajeError(err))
@@ -99,33 +132,51 @@ export function Register() {
               </div>
             </label>
 
-            <fieldset className="campo campo--rol">
-              <legend>¿Cómo vas a usar la plataforma?</legend>
-              <div className="selector-rol">
-                <button
-                  type="button"
-                  className={`opcion-rol${rol === 'PROFESOR' ? ' opcion-rol--activa' : ''}`}
-                  onClick={() => setRol('PROFESOR')}
-                >
+            <div className="formulario__fila">
+              <label className="campo">
+                <span>Sede</span>
+                <div className="campo__control">
+                  <Icon name="mapPin" size={18} />
+                  <select
+                    value={sede}
+                    onChange={(evento) => {
+                      setSede(evento.target.value)
+                      setPrograma('')
+                    }}
+                    required
+                  >
+                    <option value="">Selecciona tu sede</option>
+                    {sedes.map((nombreSede) => (
+                      <option key={nombreSede} value={nombreSede}>
+                        {nombreSede}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </label>
+              <label className="campo">
+                <span>Programa</span>
+                <div className="campo__control">
                   <Icon name="book" size={18} />
-                  <span>
-                    <strong>Profesor</strong>
-                    <small>Acompaño estudiantes</small>
-                  </span>
-                </button>
-                <button
-                  type="button"
-                  className={`opcion-rol${rol === 'COORDINADOR_SEDE' ? ' opcion-rol--activa' : ''}`}
-                  onClick={() => setRol('COORDINADOR_SEDE')}
-                >
-                  <Icon name="chart" size={18} />
-                  <span>
-                    <strong>Coordinación</strong>
-                    <small>Analizo programas</small>
-                  </span>
-                </button>
-              </div>
-            </fieldset>
+                  <select
+                    value={programa}
+                    onChange={(evento) => setPrograma(evento.target.value)}
+                    disabled={!sede}
+                    required
+                  >
+                    <option value="">{sede ? 'Selecciona el programa' : 'Primero elige la sede'}</option>
+                    {programas.map((nombrePrograma) => (
+                      <option key={nombrePrograma} value={nombrePrograma}>
+                        {nombrePrograma}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </label>
+            </div>
+            <p className="campo__ayuda">
+              Las cuentas nuevas son de profesor y solo ven los estudiantes de su programa en su sede.
+            </p>
 
             <div className="formulario__fila">
               <label className="campo">
@@ -136,7 +187,7 @@ export function Register() {
                     type={verPassword ? 'text' : 'password'}
                     value={password}
                     onChange={(evento) => setPassword(evento.target.value)}
-                    placeholder="Mínimo 6 y un número"
+                    placeholder="Mínimo 8, letras y números"
                     autoComplete="new-password"
                     required
                   />

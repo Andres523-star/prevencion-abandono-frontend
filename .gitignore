@@ -22,3 +22,8 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Variables de entorno locales (la URL del backend se configura en Vercel o en .env.local)
+.env
+.env.*
+!.env.example
